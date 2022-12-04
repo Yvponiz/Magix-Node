@@ -1,8 +1,10 @@
 import { FunctionComponent, FormEvent, useState } from "react"
 
+
 function onSubmit(event: FormEvent, state: { username: string; password: string }) {
+    let loginError: string;
     event.preventDefault()
-    fetch("/api/login",
+    fetch("/api/submitLogin",
         {
             body: JSON.stringify(state),
             method: "POST",
@@ -13,10 +15,14 @@ function onSubmit(event: FormEvent, state: { username: string; password: string 
         .then((response) => response.json())
         .then((data) => {
             if (data.status === "success") {
-                window.location.href = "/"
+                window.location.href = "/lobby"
+                sessionStorage.setItem("userKey", data.key)
+                console.log("SETKEY", sessionStorage.getItem("userKey"))
             }
-            else if (data.status === "erreur") {
+            if (data.status === "erreur") {
                 window.alert(data.errors.join("\n"))
+                // loginError = data.errors.join("\n");
+                // sessionStorage.setItem("loginError", loginError);
             }
         })
 }
@@ -37,16 +43,19 @@ const Login: FunctionComponent = () => {
                     <div className="index-column-flex">
                         <div className="login-form">
                             <h1 className="connexion">Login</h1>
-                            <form action="/index" method="post" onSubmit={(event) => onSubmit(event, state)}>
+                            {/* {isError &&
+                                <div className="error-div">{loginError}</div>
+                            } */}
+                            <form action="/" method="post" onSubmit={(event) => onSubmit(event, state)}>
                                 <p className="form-label">
                                     <label className="form-label" htmlFor="username">Username</label>
                                 </p>
-                                <input onChange={(event) => changeState({...state, username: event.target.value})} type="text" name="username" id="username" className="form-input" />
+                                <input onChange={(event) => changeState({...state, username: event.target.value})} type="text" name="username" id="username" className="form-input" required />
 
                                 <p className="form-label">
                                     <label htmlFor="password">Mot de passe </label>
                                 </p>
-                                <input onChange={(event) =>changeState({...state, password: event.target.value})} type="password" name="password" id="password" className="form-input" />
+                                <input onChange={(event) =>changeState({...state, password: event.target.value})} type="password" name="password" id="password" className="form-input" required/>
 
                                 <div className="form-button">
                                     <button type="submit">Connexion</button>

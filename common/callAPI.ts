@@ -1,11 +1,17 @@
-export function callAPI(service, data[]){
-    const apiURL = `https://magix.apps-de-cours.com/api/ . ${service}`;
+export function callAPI(service: any, data: any) {
+  const apiURL = `https://magix.apps-de-cours.com/api/${service}`;
 
-    const options = {
-        http: {
-            header: 'Content-type: application/x-www-form-urlencoded\r\n',
-            method: 'POST',
-            content: 
-        }
-    }
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams(data).toString()
+  };
+
+  return fetch(apiURL, options)
+    .then(response => response.json())
+    .then(result => {
+      return result;
+    });
 }
