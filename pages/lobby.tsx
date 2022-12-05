@@ -1,20 +1,35 @@
 import { NextPage } from "next"
-import Image from "next/image"
+import { MouseEvent, useState } from "react";
+import commonProps, { User } from "../common/commonProps";
 
-const Lobby: NextPage = () => {
-    let key;
+export function getServerSideProps({}) {
+    return commonProps({})
+}
 
-    if(typeof window !== 'undefined'){
-        key = sessionStorage.getItem("userKey")
-        console.log("GETKEY",key)
-    }
+const Lobby: NextPage<User> = ({userKey}) => {
+    const logOutKey: any = {}
+    logOutKey.key = userKey;
+
+    const [deckVisibility, setDeckVisibility] = useState(false);
+    let display;
+
+    const handleClick = () => {
+        setDeckVisibility((visible) => !visible)
+        if (!deckVisibility) {
+            display = "flex"
+        }
+        else {
+            display = "none"
+        }
+        console.log("DECKVIS", deckVisibility, "\n", "DISPLAY", display)
+    };
 
     return (
         <>
             <div className="wrapper-lobby main-container">
-                <div className="deck-manager">
-                    <iframe style={{width:"100%"}} src={`https://magix.apps-de-cours.com/server/#/deck/${key}`}></iframe>
-                    <button className="deck-manager-close">Close</button>
+                <div className="deck-manager" style={{ display: display }} >
+                    <iframe style={{ width: "100%" }} src={`https://magix.apps-de-cours.com/server/#/deck/${userKey}`}></iframe>
+                    <button className="deck-manager-close" onClick={handleClick}>Close</button>
                 </div>
 
                 <div className="menu-title">
@@ -29,34 +44,35 @@ const Lobby: NextPage = () => {
                         <a href="?practice=true">Training</a>
                     </div>
                     <div className="choice">
-                        <span className="lobby-deck-btn">Deck</span>
+                        <span className="lobby-deck-btn" onClick={handleClick}>Deck</span>
                     </div>
                     <div className="choice">
                         <a href="notes.php">Notes</a>
                     </div>
                     <div className="choice">
-                        <a href="?logout=true">Exit</a>
+                        <a href={`/api/submitSignOut?logout=true&userKey=${userKey}`}>Exit</a>
                     </div>
                 </div>
 
                 <div className="codec">
                     <div className="left-codec">
-                        <img src={"/images/gifs/campbell-codec.gif"}alt="Campbell Codc"/>
+                        <img src={"/images/gifs/campbell-codec.gif"} alt="Campbell Codc" />
                     </div>
-                    <iframe 
-                        style={{width:"700px",height:"240px"}}
+                    <iframe
+                        style={{ width: "700px", height: "240px" }}
                         // onLoad={applyStyles(this)}
-                        src={`https://magix.apps-de-cours.com/server/#/chat/${key}`}
-                        >
+                        src={`https://magix.apps-de-cours.com/server/#/chat/${userKey}`}
+                    >
                     </iframe>
                     <div className="right-codec">
-                        <img src={"/images/gifs/snake-codec.gif"} alt="Snake Codec"/>
+                        <img src={"/images/gifs/snake-codec.gif"} alt="Snake Codec" />
                     </div>
                 </div>
             </div>
 
         </>
     )
+
 }
 
 // const applyStyles = iframe => {

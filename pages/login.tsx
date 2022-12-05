@@ -1,10 +1,8 @@
 import { FunctionComponent, FormEvent, useState } from "react"
 
-
 function onSubmit(event: FormEvent, state: { username: string; password: string }) {
-    let loginError: string;
     event.preventDefault()
-    fetch("/api/submitLogin",
+    fetch("/api/submitSignIn",
         {
             body: JSON.stringify(state),
             method: "POST",
@@ -16,13 +14,10 @@ function onSubmit(event: FormEvent, state: { username: string; password: string 
         .then((data) => {
             if (data.status === "success") {
                 window.location.href = "/lobby"
-                sessionStorage.setItem("userKey", data.key)
-                console.log("SETKEY", sessionStorage.getItem("userKey"))
             }
             if (data.status === "erreur") {
                 window.alert(data.errors.join("\n"))
                 // loginError = data.errors.join("\n");
-                // sessionStorage.setItem("loginError", loginError);
             }
         })
 }
