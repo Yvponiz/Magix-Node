@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import * as fs from 'fs';
 import { callAPI } from '../../common/commonAction';
-import { User } from '../../common/commonProps';
+import { setData } from '../../common/commonProps';
 
 export default async function submitForm(
     req: NextApiRequest,
@@ -22,18 +22,8 @@ export default async function submitForm(
                 return
             }
             else {
-                const key: string = result.key;
-                const user: User = {
-                    username: data.username,
-                    userKey: key
-                }
-                const jsonString = JSON.stringify(user);
-
-                fs.writeFile('./userSession.json', jsonString, (err) =>{
-                    if (err) throw err;
-                    console.log("User session info saved");
-                })
-
+                const jsonString = JSON.stringify(result);
+                setData(jsonString);
                 res.status(200).json({ status: "success"});
             }
         }

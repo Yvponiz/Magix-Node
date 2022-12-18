@@ -2,12 +2,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { callAPI } from "../../common/commonAction";
 
 export default async function signOut(req: NextApiRequest, res: NextApiResponse<{ status: string, errors?: string[] }>) {
-    const userKey: any = {}
-    userKey.key = req.query.userKey;
+    const data: any = {}
+    data.key = req.query.userKey;
 
     if (req.query.logout) {
-        console.log("logout")
-        const result = await callAPI("signout", userKey)
+        const result = await callAPI("signout", data)
         if (result === "SIGNED_OUT") {
             res.status(200).redirect("/")
         }

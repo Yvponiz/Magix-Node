@@ -2,7 +2,7 @@ import { FunctionComponent, FormEvent, useState } from "react"
 
 function onSubmit(event: FormEvent, state: { username: string; password: string }) {
     event.preventDefault()
-    fetch("/api/submitSignIn",
+    fetch("/api/signIn",
         {
             body: JSON.stringify(state),
             method: "POST",

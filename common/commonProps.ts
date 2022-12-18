@@ -1,18 +1,30 @@
 import * as fs from 'fs';
 
-export type User = {
+export type UserSession = {
     username?: string,
-    userKey?: string
+    userKey?: string,
+    className?: string,
+    welcomeText?:string
+    gameType?: string
+}
+
+export function setData(jsonString: string){
+    fs.writeFile('./data.json', jsonString, (err) =>{
+        if (err) throw err;
+        console.log("data saved");
+    })
 }
 
 export default async function getServerSideProps({  }) {
-    const jsonString = fs.readFileSync('./userSession.json');
-    const user = JSON.parse(jsonString.toString());
-    // console.log("USER",user)
+    const jsonString = fs.readFileSync('./data.json');
+    const data = JSON.parse(jsonString.toString());
+
     return {
         props: {
-            username: user?.username ?? null,
-            userKey: user?.userKey ?? null
+            username: data?.username ?? null,
+            userKey: data?.key ?? null,
+            gameType: data?.type ?? null,
+            welcomeText: data?.welcomeText ?? null
         }
     };
 }
