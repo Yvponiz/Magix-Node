@@ -15,6 +15,7 @@ export function setData(jsonString: string){
     })
 }
 
+
 export default async function getServerSideProps({  }) {
     const jsonString = fs.readFileSync('./data.json');
     const data = JSON.parse(jsonString.toString());

@@ -15,3 +15,26 @@ export function callAPI(service: any, data: any) {
       return result;
     });
 }
+
+export async function action(action: string, uid?: number, target?: number, yourTurn?: boolean) {
+  if (yourTurn) {
+    const data: any = {}
+
+    data.action = action;
+
+    if (uid != null) {
+      data.uid = uid;
+    }
+    if (target != null) {
+      data.targetuid = target;
+    }
+
+    const s = await callAPI('games/action', data)
+    console.log("ACTION", s)
+    try {
+    } 
+    catch (error) {
+      console.error(error);
+    }
+  }
+}
