@@ -1,10 +1,11 @@
 import { NextPage } from "next"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { action, callAPI } from "../common/commonAction"
 import commonProps, { UserSession } from "../common/commonProps"
 import { State } from "../common/state"
 import Card from "../components/cardDiv"
 import Opponent from "../components/opponent"
+import PlayerInfo from "../components/playerInfo"
 import GameTemplate from "../components/template"
 
 export function getServerSideProps({ }) {
@@ -13,36 +14,73 @@ export function getServerSideProps({ }) {
 
 const Game: NextPage<UserSession> = ({ userKey }) => {
     const data: any = {}
-    data.key = userKey;
     const [state, setState] = useState<State>();
+    const [waiting, setWaiting] = useState<string>("Finding an opponent...");
+    const [displayDiv, setDisplayDiv] = useState<string>("none");
+
+    let yourTurn = false;
+    let firstRender = true;
+    let attacker = null;
+    let taunt = false;
+    let border = "solid 4px gray";
+    let opacity = "100%"
+
+    data.key = userKey;
 
     useEffect(() => {
         const interval = setInterval(async () => {
-            try {
-                const s = await callAPI('games/state', data)
-                console.log(s)
-                setState(s as State);
-            } catch (error) {
-                console.error(error);
-            }
+            const s: any | string = await callAPI('games/state', data)
+            setState(s);
+            HandleData(s, yourTurn)
+            console.log(s)
         }, 1000);
 
-        // clean up interval when component is unmounted
         return () => clearInterval(interval);
-    }, []);
+    }, [waiting]);
+
+    function HandleData(data: string | any, yourTurn: boolean) {
+        if (data === "LAST_GAME_LOST") {
+            setTimeout(function () {
+                window.location.href = "/lobby";
+            }, 2000);
+        }
+        else if (data === "LAST_GAME_WON") {
+            setTimeout(function () {
+                window.location.href = "/lobby";
+            }, 2000);
+        }
+        else if (data != "WAITING") {
+            setDisplayDiv("none");
+            yourTurn = data.yourTurn;
+        }
+        else {
+            console.log("display", displayDiv)
+            setDisplayDiv("flex");
+            setWaiting(waiting);
+            if (waiting === "Finding an opponent...") {
+                setWaiting("Finding an opponent");
+            }
+            else {
+                setWaiting(waiting + ".");
+            }
+        }
+    }
+
 
     if (state) {
 
         return (
             <>
                 <div className="wrapper-game main-container">
-                    {state.opponent && <Opponent
-                        hp={state.opponent.hp}
-                        mp={state.opponent.mp}
-                        remainingCardsCount={state.opponent.remainingCardsCount}
-                        handSize={state.opponent.handSize}
-                        heroClass={state.opponent.heroClass}
-                    />}
+                    <div className="opponent">
+                        {state.opponent && <Opponent
+                            hp={state.opponent.hp}
+                            mp={state.opponent.mp}
+                            remainingCardsCount={state.opponent.remainingCardsCount}
+                            handSize={state.opponent.handSize}
+                            heroClass={state.opponent.heroClass}
+                        />}
+                    </div>
 
                     <div className="board" id="opponent-board">
                         {state.opponent?.board?.map((card: any) => (
@@ -81,11 +119,11 @@ const Game: NextPage<UserSession> = ({ userKey }) => {
 
 
                     <div className="bottom-section">
-                        <div className="info-flex">
-                            <div className="info-hp info">30</div>
-                            <div className="info-mp info">0</div>
-                            <div className="info-cards cards-remaining info">30</div>
-                        </div>
+                        <PlayerInfo
+                            hp={state.hp}
+                            mp={state.mp}
+                            remainingCardsCount={state.remainingCardsCount}
+                        />
 
                         <div className="hand" id="hand">
                             {state.hand?.map((card: any) => (
@@ -115,7 +153,7 @@ const Game: NextPage<UserSession> = ({ userKey }) => {
 
                     </div>
                     <div className="error-message"></div>
-                    <div className="waiting"></div>
+                    <div className="waiting" style={{ display: displayDiv}}> {waiting} </div>
                 </div>
             </>
         )
@@ -127,3 +165,4 @@ const Game: NextPage<UserSession> = ({ userKey }) => {
 }
 
 export default Game
+

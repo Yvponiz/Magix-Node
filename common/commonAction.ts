@@ -1,3 +1,5 @@
+import { useRef, useState } from "react";
+
 export function callAPI(service: any, data: any) {
   const apiURL = `https://magix.apps-de-cours.com/api/${service}`;
 
@@ -32,7 +34,7 @@ export async function action(action: string, uid?: number, target?: number, your
     const s = await callAPI('games/action', data)
     console.log("ACTION", s)
     try {
-    } 
+    }
     catch (error) {
       console.error(error);
     }

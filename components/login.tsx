@@ -1,28 +1,32 @@
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { FunctionComponent, FormEvent, useState } from "react"
 
-function onSubmit(event: FormEvent, state: { username: string; password: string }) {
-    event.preventDefault()
-    fetch("/api/signIn",
-        {
-            body: JSON.stringify(state),
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }).catch((response) => response.json())
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.status === "success") {
-                window.location.href = "/lobby"
-            }
-            if (data.status === "erreur") {
-                window.alert(data.errors.join("\n"))
-                // loginError = data.errors.join("\n");
-            }
-        })
-}
 
 const Login: FunctionComponent = () => {
+    const router = useRouter();
+    
+    function onSubmit(event: FormEvent, state: { username: string; password: string }) {
+        event.preventDefault()
+        fetch("/api/signIn",
+            {
+                body: JSON.stringify(state),
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }).catch((response) => response.json())
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.status === "success") {
+                    router.push('/lobby');
+                }
+                if (data.status === "erreur") {
+                    window.alert(data.errors.join("\n"))
+                    // loginError = data.errors.join("\n");
+                }
+            })
+    }
     const [state, changeState] = useState({
         username: '',
         password: ''

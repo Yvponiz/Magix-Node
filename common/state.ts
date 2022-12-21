@@ -32,16 +32,16 @@ export interface Opponent {
 }
 
 export interface State {
-    remainingTurnTime: string | number;
-    yourTurn: boolean;
+    remainingTurnTime?: string | number;
+    yourTurn?: boolean;
     hp: string | number;
     mp: string | number;
-    maxMp: string | number;
-    hand: Card[];
-    board: Card[];
-    welcomeText: string;
-    heroClass: string;
+    maxMp?: string | number;
+    hand?: Card[];
+    board?: Card[];
+    welcomeText?: string;
+    heroClass?: string;
     remainingCardsCount: string | number;
-    opponent: Opponent;
-    latestActions: [];
+    opponent?: Opponent;
+    latestActions?: [];
 }
